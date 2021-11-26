@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class Sprite {
     public static Image load(String filePath) {
-        Image image = new Image(Objects.requireNonNull(Main.class.getResourceAsStream(filePath)));
+        Image image = new Image(Main.class.getResourceAsStream(filePath));
         WritableImage writableImage = new WritableImage(48, 48);
         PixelWriter pixelWriter = writableImage.getPixelWriter();
         PixelReader pixelReader = image.getPixelReader();
@@ -41,7 +41,7 @@ public class Sprite {
      * Player sprites.
      */
     public static final Image player_up = load("/sprites/player_up.png");
-    public static final Image player_down = load("/sprites/brick.png");
+    public static final Image player_down = load("/sprites/player_down.png");
     public static final Image player_left = load("/sprites/player_left.png");
     public static final Image player_right  = load("/sprites/player_right.png");
 
