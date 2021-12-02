@@ -1,5 +1,6 @@
 package com.bomberman.entities.mobileEntites;
 
+import com.bomberman.constants.Const;
 import com.bomberman.constants.Direction;
 import com.bomberman.entities.AnimatedEntity;
 import com.bomberman.entities.Entity;
@@ -16,7 +17,7 @@ public abstract class MobileEntity extends AnimatedEntity {
     protected boolean ableToPassWall = false;
     protected boolean ableToPassBrick = false;
     protected int passAwayTime = 30;
-//    protected int aBigStep = Const.BLOCK_SIZE;
+    protected int aBigStep = Const.BLOCK_SIZE;
     protected int speed;
 
 
@@ -78,20 +79,20 @@ public abstract class MobileEntity extends AnimatedEntity {
         }
     }
 
-//    public boolean movableSteps(int steps, Direction direction) {
-//        switch (direction) {
-//            case UP:
-//                return checkFriendlyCollisions(x_pos, y_pos - steps);
-//            case DOWN:
-//                return checkFriendlyCollisions(x_pos, y_pos + steps);
-//            case LEFT:
-//                return checkFriendlyCollisions(x_pos - steps, y_pos);
-//            case RIGHT:
-//                return checkFriendlyCollisions(x_pos + steps, y_pos);
-//            default:
-//                return false;
-//        }
-//    }
+    public boolean movableSteps(int steps, Direction direction) {
+        switch (direction) {
+            case UP:
+                return checkFriendlyCollisions(x_pos, y_pos - steps);
+            case DOWN:
+                return checkFriendlyCollisions(x_pos, y_pos + steps);
+            case LEFT:
+                return checkFriendlyCollisions(x_pos - steps, y_pos);
+            case RIGHT:
+                return checkFriendlyCollisions(x_pos + steps, y_pos);
+            default:
+                return false;
+        }
+    }
 
     public boolean checkFriendlyCollisions(int x, int y) {
         boundedBox.setPosition(x, y);

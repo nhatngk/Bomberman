@@ -32,11 +32,11 @@ public abstract class Enemy extends MobileEntity {
             }
         }
         playAnimation();
-//        try {
-//            enemySmartMoving();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            enemySmartMoving();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -62,27 +62,27 @@ public abstract class Enemy extends MobileEntity {
     }
 
     protected void enemySmartMoving() {
-//        if (aBigStep > 0 && movableSteps(speed, currentDirection)) {
-//            move(speed, currentDirection);
-//            aBigStep -= speed;
-//        } else {
-//            aBigStep = Const.BLOCK_SIZE;
-//            switch (currentDirection) {
-//                case UP:
-//                    y_node -= 1;
-//                    break;
-//                case DOWN:
-//                    y_node += 1;
-//                    break;
-//                case LEFT:
-//                    x_node -= 1;
-//                    break;
-//                case RIGHT:
-//                    x_node += 1;
-//                    break;
-//            }
-//            currentDirection = movingEnemy.movingDirection(Map.mapMatrix, x_node, y_node);
-//        }
+        if (aBigStep > 0 && movableSteps(speed, currentDirection)) {
+            move(speed, currentDirection);
+            aBigStep -= speed;
+        } else {
+            aBigStep = Const.BLOCK_SIZE;
+            switch (currentDirection) {
+                case UP:
+                    y_node -= 1;
+                    break;
+                case DOWN:
+                    y_node += 1;
+                    break;
+                case LEFT:
+                    x_node -= 1;
+                    break;
+                case RIGHT:
+                    x_node += 1;
+                    break;
+            }
+            currentDirection = moving.movingDirection(Map.mapMatrix, x_node, y_node);
+        }
     }
 
     public int getScore() {

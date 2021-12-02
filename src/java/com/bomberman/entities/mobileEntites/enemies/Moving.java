@@ -152,4 +152,25 @@ public class Moving {
         } while (!movableDirection(matrix, e_x, e_y, direction));
         return direction;
     }
+
+    public Direction movingDirection(char[][] matrix, int e_x, int e_y) {
+        Direction direction = null;
+        switch (level) {
+            case LOW:
+                direction = randomMoving(matrix, e_x, e_y);
+                break;
+            case MEDIUM:
+                direction = pathFinding(matrix, e_x, e_y,
+                        player.getX_node(), player.getY_node(),
+                        level.MEDIUM);
+                break;
+            case HIGH:
+                direction = pathFinding(matrix, e_x, e_y,
+                        player.getX_node(), player.getX_node(),
+                        level.MEDIUM);
+                break;
+        }
+
+        return direction;
+    }
 }

@@ -257,4 +257,12 @@ public class Player extends MobileEntity {
     public Image getLeftImage() {
         return Sprite.player_left;
     }
+
+    public int getX_node() {
+        return x_node;
+    }
+
+    public int getY_node() {
+        return y_node;
+    }
 }
