@@ -1,6 +1,7 @@
 package com.bomberman.entities.mobileEntites.enemies;
 
 import com.bomberman.constants.Const;
+import com.bomberman.control.Sound;
 import com.bomberman.entities.Entity;
 import com.bomberman.control.Map;
 import com.bomberman.entities.RectBox;

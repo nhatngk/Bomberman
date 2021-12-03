@@ -94,6 +94,22 @@ public abstract class MobileEntity extends AnimatedEntity {
         }
     }
 
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public boolean isAbleToPassWall() {
+        return ableToPassWall;
+    }
+
+    public boolean isAbleToPassBrick() {
+        return ableToPassBrick;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
     public boolean checkFriendlyCollisions(int x, int y) {
         boundedBox.setPosition(x, y);
         for (Entity entity : Map.getBoardLayer()) {

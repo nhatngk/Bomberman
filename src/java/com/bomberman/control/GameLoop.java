@@ -7,8 +7,9 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.GraphicsContext;
 
 public class GameLoop {
+    private static int countdown;
     public static void start(GraphicsContext graphicsContext) {
-
+        countdown = 300;
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -17,13 +18,21 @@ public class GameLoop {
                         , Map.mapHeight * Const.SCALED_SIZE);
                 updateGame();
                 renderGame(graphicsContext);
+                if (countdown == 0) {
+                    stop();
+                    countdown = 300;
+                    Map.gameOver();
+                    System.out.println("test");
+                }
+                if (Player.getPlayer().isAlive() == false) {
+                    countdown--;
+                }
             }
         };
         timer.start();
     }
 
     private static void updateGame() {
-
         Map.bombs.setText("Bomb: " + Player.getPlayer().getRemainBombs());
         Map.score.setText("Score: " + Map.gameScore);
         Map.enemies.setText("Left: " + Map.getEnemyLayer().size());
@@ -41,6 +50,7 @@ public class GameLoop {
         Player.getPlayer().update();
         Map.setCameraView();
         Map.removeEntity();
+        Map.exportLevel();
     }
 
     private static void renderGame(GraphicsContext graphicsContext) {

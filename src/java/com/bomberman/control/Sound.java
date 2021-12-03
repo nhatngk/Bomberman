@@ -6,6 +6,11 @@ import java.net.URL;
 
 public class Sound {
     public static Sound BGM = new Sound("/sound/background.wav");
+    public static Sound Exp = new Sound("/sound/explosion.wav");
+    public static Sound placeB = new Sound("/sound/place_bomb.wav");
+    public static Sound Die = new Sound("/sound/player_die.wav");
+    public static Sound PUP = new Sound("/sound/power_up.wav");
+    public static Sound RUN = new Sound("/sound/running.wav");
 
     public static enum Volume {
         MUTE, ON

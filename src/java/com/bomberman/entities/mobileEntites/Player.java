@@ -58,12 +58,35 @@ public class Player extends MobileEntity {
         speed = 2;
     }
 
+    public static void resetPlayer() {
+        player = new Player(0, 0);
+    }
+
     public static Player setPlayer(int x, int y) {
         if (player == null) {
             player = new Player(x, y);
         } else {
             player.setPosition(x, y);
         }
+        return player;
+    }
+
+    public static Player setPlayerPlus(int x, int y, int bombCount, int bombRadius, int speed,
+                                boolean ableToPassFlame, boolean ableToPassBomb,
+                                boolean ableToPassWall, boolean ableToPassBrick,
+                                boolean alive) {
+        player = new Player(x, y);
+        player.ableToPassBomb = ableToPassBomb;
+        player.ableToPassFlame = ableToPassFlame;
+        player.bombRadius = bombRadius;
+        if (speed == 4) {
+            player.speedBoosted = true;
+        }
+        player.speed = speed;
+        player.bombCount = bombCount;
+        player.ableToPassBrick = ableToPassBrick;
+        player.ableToPassWall = ableToPassWall;
+        player.alive = alive;
         return player;
     }
 
@@ -147,25 +170,28 @@ public class Player extends MobileEntity {
     }
 
     public void checkEnemyCollision() {
-        for (Entity entity : Map.getEnemyLayer()) {
-            if (entity instanceof Enemy && isColliding(entity)) {
-                alive = false;
-                remove();
-                break;
+        if (alive == true) {
+            for (Entity entity : Map.getEnemyLayer()) {
+                if (entity instanceof Enemy && isColliding(entity)) {
+                    Sound.Die.play(false);
+                    alive = false;
+                    remove();
+                    break;
+                }
             }
-        }
-        for (Entity entity : Map.getTopLayer()) {
-            if (entity instanceof BombExplosion
-                    && isColliding(entity)  && !ableToPassFlame) {
-                alive = false;
-                remove();
-                break;
-            }
-            if (entity instanceof Bomb && isColliding(entity)
-                    && ((Bomb) entity).isExploded() && !ableToPassFlame) {
-                alive = false;
-                remove();
-                break;
+            for (Entity entity : Map.getTopLayer()) {
+                if (entity instanceof BombExplosion
+                        && isColliding(entity) && !ableToPassFlame) {
+                    alive = false;
+                    remove();
+                    break;
+                }
+                if (entity instanceof Bomb && isColliding(entity)
+                        && ((Bomb) entity).isExploded() && !ableToPassFlame) {
+                    alive = false;
+                    remove();
+                    break;
+                }
             }
         }
     }
@@ -221,6 +247,18 @@ public class Player extends MobileEntity {
         return speed;
     }
 
+
+    public int getBombCount() {
+        return bombCount;
+    }
+
+    public boolean isAbleToPassFlame() {
+        return ableToPassFlame;
+    }
+
+    public boolean isAbleToPassBomb() {
+        return ableToPassBomb;
+    }
 
     public int getBombRadius() {
         return bombRadius;

@@ -103,7 +103,7 @@ public class Moving {
 
         boolean pathExits = false;
 
-        if (Math.abs((e_x - p_x) * (e_y - p_y)) < tracingRange && level == Level.LOW) {
+        if (Math.abs((e_x - p_x) * (e_y - p_y)) < tracingRange && level != Level.LOW) {
             List<Node> queue = new ArrayList<>();
             queue.add(new Node(p_x, p_y));
 

@@ -1,17 +1,14 @@
 package graphics;
 
-import com.bomberman.Main;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-import java.util.Objects;
-
 public class Sprite {
     public static Image load(String filePath) {
-        Image image = new Image(Main.class.getResourceAsStream(filePath));
+        Image image = new FxImage(filePath, 16).getImage();
         WritableImage writableImage = new WritableImage(48, 48);
         PixelWriter pixelWriter = writableImage.getPixelWriter();
         PixelReader pixelReader = image.getPixelReader();
