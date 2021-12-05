@@ -20,17 +20,16 @@ public class GameLoop {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                System.out.println("test2");
                 graphicsContext.clearRect(0, 0
                         , Map.mapWidth * Const.SCALED_SIZE
                         , Map.mapHeight * Const.SCALED_SIZE);
                 updateGame();
                 renderGame(graphicsContext);
-
+                Map.exportLevel();
                 if (cd1 == 0) {
                     stop();
                     cd1 = 50;
-                    Map.gameOver();
+                    Map.gameOver("GAME OVER");
                 }
                 if (!Player.getPlayer().isAlive()) {
                     cd1--;
@@ -49,6 +48,11 @@ public class GameLoop {
                         start();
                     }));
                     timeline.play();
+                }
+                if (Map.win == true) {
+                    stop();
+                    Map.win = false;
+                    Map.gameOver("YOU WIN!!");
                 }
             }
         };
@@ -73,7 +77,6 @@ public class GameLoop {
         Player.getPlayer().update();
         Map.setCameraView();
         Map.removeEntity();
-        Map.exportLevel();
     }
 
     private static void renderGame(GraphicsContext graphicsContext) {

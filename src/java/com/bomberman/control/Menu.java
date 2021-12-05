@@ -11,7 +11,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.StringTokenizer;
+
 public class Menu {
+    static int top;
     static Scene scene;
     public static AnchorPane anchorPane;
     public static ImageView imageView = new ImageView();
@@ -24,6 +31,14 @@ public class Menu {
         Sound.BGM.play(true);
         initLabel();
         stage_ = stage;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(new File("top.txt")));
+            String data = reader.readLine();
+            StringTokenizer tokens = new StringTokenizer(data);
+            top = Integer.parseInt(tokens.nextToken());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         Image image = new Image(Main.class.getResourceAsStream("/sprites/Menu.png"));
         imageView.setImage(image);
@@ -54,11 +69,11 @@ public class Menu {
         continueL.setLayoutX(300);
         continueL.setLayoutY(530);
 
-        topScore = new Label("HIGH SCORE");
+        topScore = new Label("TOP " + top);
         topScore.setTextFill(Color.web("#ffffff"));
         topScore.setFont(font);
         topScore.autosize();
-        topScore.setLayoutX(275);
+        topScore.setLayoutX(340);
         topScore.setLayoutY(590);
 
         //handle event
@@ -83,21 +98,11 @@ public class Menu {
             continueL.setTextFill(Color.web("#ffffff"));
         });
         continueL.setOnMouseClicked(MouseEvent ->{
-            Sound.BGM.stop();
-            Map.loadMapFile("/Level0.txt");
+            Map.loadMapFile("Level0.txt");
             Map.initScene();
+            Sound.BGM.stop();
             scene = Map.getScene();
             stage_.setScene(scene);
-        });
-        //hight score
-        topScore.setOnMouseEntered(MouseEvent ->{
-            topScore.setTextFill(Color.web("#ff3422"));
-        });
-        topScore.setOnMouseExited(MouseEvent ->{
-            topScore.setTextFill(Color.web("#ffffff"));
-        });
-        topScore.setOnMouseClicked(MouseEvent ->{
-
         });
     }
 }

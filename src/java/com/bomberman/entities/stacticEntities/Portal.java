@@ -18,7 +18,11 @@ public class Portal extends Item {
 
     public void checkPlayerCollision() {
         if (isColliding(Player.getPlayer()) || Map.getEnemyLayer().size() == 0) {
-            Map.isPassLevel = true;
+            if (Map.currentLevel < 5) {
+                Map.isPassLevel = true;
+            } else {
+                Map.win = true;
+            }
         }
     }
 

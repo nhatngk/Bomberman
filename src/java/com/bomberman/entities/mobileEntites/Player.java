@@ -19,7 +19,7 @@ public class Player extends MobileEntity {
     private static Player player;
 
     private int bombCount = 1;
-    private int placedBombs;
+    private int placedBombs = 0;
     private int bombRadius = 1;
 
     private boolean ableToPassFlame = false;

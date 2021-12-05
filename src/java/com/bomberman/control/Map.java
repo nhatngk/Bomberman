@@ -53,7 +53,7 @@ public class Map {
     public static int CANVAS_WIDTH;
     public static int CANVAS_HEIGHT;
 
-    private static int currentLevel = 1;
+    public static int currentLevel = 5;
     public static int gameScore = 0;
     private static boolean continueL = false;
 
@@ -61,6 +61,7 @@ public class Map {
     public static int mapWidth;
     public static int mapHeight;
     public static int mapLevel;
+    public static boolean win = false;
 
 
     static {
@@ -171,7 +172,7 @@ public class Map {
     }
 
     public static void nextMap() {
-        if (currentLevel <= 5) {
+        if (currentLevel < 5) {
             currentLevel += 1;
         } else {
             currentLevel = 1;
@@ -180,6 +181,7 @@ public class Map {
 
     public static void nextLevel() {
         System.out.println("test1");
+        continueL = false;
         clearMap();
         nextMap();
         createMap(currentLevel);
@@ -187,12 +189,28 @@ public class Map {
         scene.setRoot(rootGame);
     }
 
-    public static void resetLevel() {
-        createMap(currentLevel);
-    }
-
-    public static void gameOver() {
+    public static void gameOver(String mess) {
+        // reset level 0
+        try {
+            File file = new File("Level0.txt");
+            OutputStream outputStream = new FileOutputStream(file);
+            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+            writer.write("");
+            writer.close();
+            if (Menu.top < gameScore) {
+                Menu.top = gameScore;
+                System.out.println(Menu.top);
+                System.out.println(gameScore);
+                outputStream = new FileOutputStream(new File("top.txt"));
+                writer = new OutputStreamWriter(outputStream);
+                writer.write(String.valueOf(Menu.top));
+                writer.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         rootGameOver = new Group();
+        continueL = false;
         clearMap();
         Player.resetPlayer();
         player = null;
@@ -203,7 +221,7 @@ public class Map {
         paneGameOver.setPrefHeight(Const.SCENE_HEIGHT);
         paneGameOver.setStyle("-fx-background-color: BLACK");
         //Game over
-        Label temp = new Label("Game over");
+        Label temp = new Label(mess);
         Font tempfont = Font.loadFont(Main.class.getResourceAsStream("/Font/joystix monospace.ttf"), 50);
         temp.setFont(tempfont);
         temp.setTextFill(Color.web("#ffffff"));
@@ -212,12 +230,12 @@ public class Map {
         temp.setLayoutY(230);
         //New game
         Label newGame = new Label("NEW GAME");
-        tempfont = Font.loadFont(Main.class.getResourceAsStream("/Font/joystix monospace.ttf"), 22);
+        tempfont = Font.loadFont(Main.class.getResourceAsStream("/Font/joystix monospace.ttf"), 30);
         newGame.setFont(tempfont);
         newGame.setTextFill(Color.web("#ffffff"));
         newGame.autosize();
-        newGame.setLayoutX(310);
-        newGame.setLayoutY(320);
+        newGame.setLayoutX(280);
+        newGame.setLayoutY(370);
         newGame.setOnMouseEntered(MouseEvent -> newGame.setTextFill(Color.web("#ff3422")));
         newGame.setOnMouseExited(MouseEvent -> newGame.setTextFill(Color.web("#ffffff")));
         newGame.setOnMouseClicked(MouseEvent ->{
@@ -231,15 +249,28 @@ public class Map {
         menu.setFont(tempfont);
         menu.setTextFill(Color.web("#ffffff"));
         menu.autosize();
-        menu.setLayoutX(340);
-        menu.setLayoutY(380);
+        menu.setLayoutX(330);
+        menu.setLayoutY(430);
         menu.setOnMouseEntered(MouseEvent -> menu.setTextFill(Color.web("#ff3422")));
         menu.setOnMouseExited(MouseEvent -> menu.setTextFill(Color.web("#ffffff")));
         menu.setOnMouseClicked(MouseEvent ->{
             Sound.BGM.stop();
             Main.getStage().setScene(Menu.menuScene(Main.getStage()));
         });
-        rootGameOver.getChildren().addAll(paneGameOver, temp, newGame, menu);
+        Label score = new Label("SCORE " + gameScore);
+        tempfont = Font.loadFont(Main.class.getResourceAsStream("/Font/joystix monospace.ttf"), 22);
+        score.setFont(tempfont);
+        score.setTextFill(Color.web("#ffffff"));
+        score.autosize();
+        score.setLayoutX(310);
+        score.setLayoutY(320);
+        score.setOnMouseEntered(MouseEvent -> menu.setTextFill(Color.web("#ff3422")));
+        score.setOnMouseExited(MouseEvent -> menu.setTextFill(Color.web("#ffffff")));
+        score.setOnMouseClicked(MouseEvent ->{
+            Sound.BGM.stop();
+            Main.getStage().setScene(Menu.menuScene(Main.getStage()));
+        });
+        rootGameOver.getChildren().addAll(paneGameOver, temp, newGame, menu, score);
         scene.setRoot(rootGameOver);
     }
 
@@ -385,8 +416,14 @@ public class Map {
 
     public static void loadMapFile(String filePath) {
         try {
-            URL fileMapPath = Map.class.getResource(filePath);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(fileMapPath.openStream()));
+            URL fileMapPath;
+            BufferedReader reader;
+            if (filePath.equals("Level0.txt")) {
+                reader = new BufferedReader(new FileReader(new File(filePath)));
+            } else {
+                fileMapPath = Map.class.getResource(filePath);
+                reader = new BufferedReader(new InputStreamReader(fileMapPath.openStream()));
+            }
             String data = reader.readLine();
             StringTokenizer tokens = new StringTokenizer(data);
             mapLevel = Integer.parseInt(tokens.nextToken());
@@ -411,7 +448,7 @@ public class Map {
                 }
             }
             //level 0: continue read
-            if (filePath.equals("/Level0.txt")) {
+            if (filePath.equals("Level0.txt")) {
                 continueL = true;
                 //gameScore
                 data = reader.readLine();
