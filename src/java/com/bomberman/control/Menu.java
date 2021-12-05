@@ -43,24 +43,23 @@ public class Menu {
         startL = new Label("START");
         startL.setTextFill(Color.web("#ffffff"));
         startL.setFont(font);
-        startL.setPrefWidth(150);
-        startL.setPrefHeight(25);
-        startL.setLayoutX(300);
-        startL.setLayoutY(460);
+        startL.autosize();
+        startL.setLayoutX(340);
+        startL.setLayoutY(470);
 
         continueL = new Label("CONTINUE");
         continueL.setTextFill(Color.web("#ffffff"));
         continueL.setFont(font);
         continueL.autosize();
         continueL.setLayoutX(300);
-        continueL.setLayoutY(520);
+        continueL.setLayoutY(530);
 
         topScore = new Label("HIGH SCORE");
         topScore.setTextFill(Color.web("#ffffff"));
         topScore.setFont(font);
         topScore.autosize();
-        topScore.setLayoutX(300);
-        topScore.setLayoutY(580);
+        topScore.setLayoutX(275);
+        topScore.setLayoutY(590);
 
         //handle event
         //start

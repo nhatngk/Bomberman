@@ -4,28 +4,51 @@ import com.bomberman.constants.Const;
 import com.bomberman.entities.Entity;
 import com.bomberman.entities.mobileEntites.Player;
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.util.Duration;
+
 
 public class GameLoop {
-    private static int countdown;
+    private static int cd1;
+    private static int cd2;
     public static void start(GraphicsContext graphicsContext) {
-        countdown = 300;
+        cd1 = 50;
+        cd2 = 50;
+
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                System.out.println("test2");
                 graphicsContext.clearRect(0, 0
                         , Map.mapWidth * Const.SCALED_SIZE
                         , Map.mapHeight * Const.SCALED_SIZE);
                 updateGame();
                 renderGame(graphicsContext);
-                if (countdown == 0) {
+
+                if (cd1 == 0) {
                     stop();
-                    countdown = 300;
+                    cd1 = 50;
                     Map.gameOver();
-                    System.out.println("test");
                 }
-                if (Player.getPlayer().isAlive() == false) {
-                    countdown--;
+                if (!Player.getPlayer().isAlive()) {
+                    cd1--;
+                }
+                if (Map.isPassLevel) {
+                    cd2--;
+                }
+                if (cd2 == 0) {
+                    stop();
+                    Map.isPassLevel = false;
+                    cd2 = 50;
+                    Map.tranfer();
+                    Timeline timeline = new Timeline(new KeyFrame(Duration.millis(3000), ev -> {
+                        System.out.println("test");
+                        Map.nextLevel();
+                        start();
+                    }));
+                    timeline.play();
                 }
             }
         };
@@ -68,7 +91,6 @@ public class GameLoop {
         for (Entity entity : Map.getEnemyLayer()) {
             entity.render(graphicsContext);
         }
-
         Player.getPlayer().render(graphicsContext);
     }
 }

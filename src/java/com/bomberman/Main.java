@@ -12,7 +12,7 @@ public class Main extends javafx.application.Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        this.stage = stage;
+        Main.stage = stage;
         stage.getIcons().add(Sprite.bomb);
         stage.setTitle(Const.GAME_NAME + " " + Const.GAME_VER);
         Scene scene = Menu.menuScene(stage);

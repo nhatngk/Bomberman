@@ -1,10 +1,10 @@
 package com.bomberman.entities.stacticEntities;
 
 import com.bomberman.control.Map;
-import com.bomberman.control.Sound;
 import com.bomberman.entities.mobileEntites.Player;
 import graphics.Sprite;
 import javafx.scene.image.Image;
+
 
 
 public class Portal extends Item {
@@ -17,9 +17,8 @@ public class Portal extends Item {
     }
 
     public void checkPlayerCollision() {
-        if (isColliding(Player.getPlayer()) && Map.getEnemyLayer().size() == 0) {
-            new Sound("/sound/power_up.wav").play(false);
-            Map.nextLevel();
+        if (isColliding(Player.getPlayer()) || Map.getEnemyLayer().size() == 0) {
+            Map.isPassLevel = true;
         }
     }
 

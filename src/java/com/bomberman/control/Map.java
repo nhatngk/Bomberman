@@ -10,7 +10,6 @@ import com.bomberman.entities.stacticEntities.Grass;
 import com.bomberman.entities.stacticEntities.Portal;
 import com.bomberman.entities.stacticEntities.Wall;
 import com.bomberman.entities.stacticEntities.items.*;
-import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -28,14 +27,18 @@ import java.util.StringTokenizer;
 
 public class Map {
     static Scene scene;
-    static Group root;
+    static Group rootGame;
+    static Group rootGameOver;
+    static Group rootTransfer;
     static Canvas canvas;
     static GraphicsContext graphicsContext;
     private static boolean sceneStarted;
     static Player player;
     private static Font font = Font.loadFont(Main.class.getResourceAsStream("/Font/joystix monospace.ttf"), 18);
 
-    public static Pane pane;
+    public static Pane paneGame;
+    public static Pane paneGameOver;
+    public static Pane paneTransfer;
     public static Label score;
     public static Label bombs;
     public static Label levels;
@@ -43,18 +46,18 @@ public class Map {
 
     public static char[][] myMap;
     public static char[][] mapMatrix;
-    private static final List<Enemy> enemyLayer = new ArrayList<Enemy>();
-    private static final List<Entity> topLayer = new ArrayList<Entity>();
-    private static final List<Entity> midLayer = new ArrayList<Entity>();
-    private static final List<Entity> boardLayer = new ArrayList<Entity>();
+    private static final List<Enemy> enemyLayer = new ArrayList<>();
+    private static final List<Entity> topLayer = new ArrayList<>();
+    private static final List<Entity> midLayer = new ArrayList<>();
+    private static final List<Entity> boardLayer = new ArrayList<>();
     public static int CANVAS_WIDTH;
     public static int CANVAS_HEIGHT;
 
     private static int currentLevel = 1;
     public static int gameScore = 0;
     private static boolean continueL = false;
-    private static int count = 200;
 
+    public static boolean isPassLevel = false;
     public static int mapWidth;
     public static int mapHeight;
     public static int mapLevel;
@@ -65,11 +68,11 @@ public class Map {
     }
 
     private static void initGame() {
-        root = new Group();
-        scene = new Scene(root, Const.SCENE_WIDTH, Const.SCENE_HEIGHT);
+        rootGame = new Group();
+        scene = new Scene(rootGame, Const.SCENE_WIDTH, Const.SCENE_HEIGHT);
         canvas = new Canvas();
         initLabel();
-        root.getChildren().addAll(pane, canvas, score, enemies, bombs, levels);
+        rootGame.getChildren().addAll(paneGame, canvas, score, enemies, bombs, levels);
         graphicsContext = canvas.getGraphicsContext2D();
         createMap(currentLevel);
         GameLoop.start(getGraphicsContext());
@@ -77,31 +80,36 @@ public class Map {
     }
 
     private static void initLabel() {
-        pane = new Pane();
-        pane.setLayoutX(0);
-        pane.setLayoutY(0);
-        pane.setPrefWidth(Const.SCENE_WIDTH);
-        pane.setPrefHeight(48);
-        pane.setStyle("-fx-background-color: #babab8");
+        paneGame = new Pane();
+        paneGame.setLayoutX(0);
+        paneGame.setLayoutY(0);
+        paneGame.setPrefWidth(Const.SCENE_WIDTH);
+        paneGame.setPrefHeight(48);
+        paneGame.setStyle("-fx-background-color: #babab8");
 
         score = new Label("Score");
         score.setFont(font);
         score.autosize();
+        score.setLayoutX(50);
+        score.setLayoutY(12);
 
         enemies = new Label("Enemies");
         enemies.setFont(font);
         enemies.autosize();
-        enemies.setLayoutX(150);
+        enemies.setLayoutX(240);
+        enemies.setLayoutY(12);
 
         bombs = new Label("Bomb");
         bombs.setFont(font);
         bombs.autosize();
-        bombs.setLayoutX(350);
+        bombs.setLayoutX(430);
+        bombs.setLayoutY(12);
 
         levels = new Label("");
         levels.setFont(font);
         levels.autosize();
-        levels.setLayoutX(550);
+        levels.setLayoutX(600);
+        levels.setLayoutY(12);
     }
 
     public static void initScene() {
@@ -122,7 +130,7 @@ public class Map {
     public static void createMap(int level) {
         levels.setText("Level: " + level);
         clearMap();
-        if (continueL == false) {
+        if (!continueL) {
             loadMapFile("/levels/Level" + level + ".txt");
         }
         for (int i = 0; i < mapHeight; i++) {
@@ -143,13 +151,13 @@ public class Map {
         } else {
             canvas.setLayoutX(Const.SCENE_WIDTH / 2.0 - player.getX_pos());
         }
-        if (player.getY_pos() < (Const.SCENE_HEIGHT + 2 * pane.getHeight()) / 2) {
-            canvas.setLayoutY(pane.getHeight());
-        } else if (player.getY_pos() > CANVAS_HEIGHT + pane.getHeight() - Const.SCENE_HEIGHT / 2) {
+        if (player.getY_pos() < (Const.SCENE_HEIGHT + 2 * paneGame.getHeight()) / 2) {
+            canvas.setLayoutY(paneGame.getHeight());
+        } else if (player.getY_pos() > CANVAS_HEIGHT + paneGame.getHeight() - Const.SCENE_HEIGHT / 2) {
             canvas.setLayoutY(Const.SCENE_HEIGHT - CANVAS_HEIGHT);
         } else {
-            canvas.setLayoutY((Const.SCENE_HEIGHT) / 2.0 - player.getY_pos() + 2 * pane.getHeight());
-            pane.setLayoutY(0);
+            canvas.setLayoutY((Const.SCENE_HEIGHT) / 2.0 - player.getY_pos() + 2 * paneGame.getHeight());
+            paneGame.setLayoutY(0);
         }
     }
 
@@ -171,10 +179,12 @@ public class Map {
     }
 
     public static void nextLevel() {
+        System.out.println("test1");
         clearMap();
         nextMap();
         createMap(currentLevel);
         player.setBombCount();
+        scene.setRoot(rootGame);
     }
 
     public static void resetLevel() {
@@ -182,37 +192,34 @@ public class Map {
     }
 
     public static void gameOver() {
+        rootGameOver = new Group();
         clearMap();
         Player.resetPlayer();
         player = null;
-        pane = new Pane();
-        pane.setLayoutX(0);
-        pane.setLayoutY(0);
-        pane.setPrefWidth(Const.SCENE_WIDTH);
-        pane.setPrefHeight(Const.SCENE_HEIGHT);
-        pane.setStyle("-fx-background-color: BLACK");
+        paneGameOver = new Pane();
+        paneGameOver.setLayoutX(0);
+        paneGameOver.setLayoutY(0);
+        paneGameOver.setPrefWidth(Const.SCENE_WIDTH);
+        paneGameOver.setPrefHeight(Const.SCENE_HEIGHT);
+        paneGameOver.setStyle("-fx-background-color: BLACK");
         //Game over
         Label temp = new Label("Game over");
-        Font tempfont = Font.loadFont(Main.class.getResourceAsStream("/Font/joystix monospace.ttf"), 30);
+        Font tempfont = Font.loadFont(Main.class.getResourceAsStream("/Font/joystix monospace.ttf"), 50);
         temp.setFont(tempfont);
         temp.setTextFill(Color.web("#ffffff"));
         temp.autosize();
-        temp.setLayoutX(250);
-        temp.setLayoutY(250);
+        temp.setLayoutX(200);
+        temp.setLayoutY(230);
         //New game
         Label newGame = new Label("NEW GAME");
         tempfont = Font.loadFont(Main.class.getResourceAsStream("/Font/joystix monospace.ttf"), 22);
         newGame.setFont(tempfont);
         newGame.setTextFill(Color.web("#ffffff"));
         newGame.autosize();
-        newGame.setLayoutX(280);
-        newGame.setLayoutY(300);
-        newGame.setOnMouseEntered(MouseEvent ->{
-            newGame.setTextFill(Color.web("#ff3422"));
-        });
-        newGame.setOnMouseExited(MouseEvent ->{
-            newGame.setTextFill(Color.web("#ffffff"));
-        });
+        newGame.setLayoutX(310);
+        newGame.setLayoutY(320);
+        newGame.setOnMouseEntered(MouseEvent -> newGame.setTextFill(Color.web("#ff3422")));
+        newGame.setOnMouseExited(MouseEvent -> newGame.setTextFill(Color.web("#ffffff")));
         newGame.setOnMouseClicked(MouseEvent ->{
             Sound.BGM.stop();
             Map.initScene();
@@ -224,45 +231,37 @@ public class Map {
         menu.setFont(tempfont);
         menu.setTextFill(Color.web("#ffffff"));
         menu.autosize();
-        menu.setLayoutX(300);
-        menu.setLayoutY(330);
-        menu.setOnMouseEntered(MouseEvent ->{
-            menu.setTextFill(Color.web("#ff3422"));
-        });
-        menu.setOnMouseExited(MouseEvent ->{
-            menu.setTextFill(Color.web("#ffffff"));
-        });
+        menu.setLayoutX(340);
+        menu.setLayoutY(380);
+        menu.setOnMouseEntered(MouseEvent -> menu.setTextFill(Color.web("#ff3422")));
+        menu.setOnMouseExited(MouseEvent -> menu.setTextFill(Color.web("#ffffff")));
         menu.setOnMouseClicked(MouseEvent ->{
             Sound.BGM.stop();
             Main.getStage().setScene(Menu.menuScene(Main.getStage()));
         });
-        root.getChildren().addAll(pane, temp, newGame, menu);
+        rootGameOver.getChildren().addAll(paneGameOver, temp, newGame, menu);
+        scene.setRoot(rootGameOver);
     }
 
     public static void tranfer() {
-        root = new Group();
-        scene = new Scene(root, Const.SCENE_WIDTH, Const.SCENE_HEIGHT);
-        pane = new Pane();
-        pane.setLayoutX(0);
-        pane.setLayoutY(0);
-        pane.setPrefWidth(Const.SCENE_WIDTH);
-        pane.setPrefHeight(Const.SCENE_HEIGHT);
-        pane.setStyle("-fx-background-color: BLACK");
+        rootTransfer = new Group();
+        paneTransfer = new Pane();
+        paneTransfer.setLayoutX(0);
+
+        paneTransfer.setLayoutY(0);
+        paneTransfer.setPrefWidth(Const.SCENE_WIDTH);
+        paneTransfer.setPrefHeight(Const.SCENE_HEIGHT);
+        paneTransfer.setStyle("-fx-background-color: BLACK");
         //Show stage
-        Label temp = new Label("Stage " + currentLevel);
+        Label temp = new Label("Stage " + (currentLevel+1));
         Font tempfont = Font.loadFont(Main.class.getResourceAsStream("/Font/joystix monospace.ttf"), 40);
         temp.setFont(tempfont);
         temp.setTextFill(Color.web("#ffffff"));
         temp.autosize();
         temp.setLayoutX(250);
         temp.setLayoutY(250);
-        root.getChildren().addAll(pane, temp);
-        Main.getStage().setScene(scene);
-        Main.getStage().show();
-    }
-
-    public static void nextLevelByFn(int next) {
-        createMap(next);
+        rootTransfer.getChildren().addAll(paneTransfer, temp);
+        scene.setRoot(rootTransfer);
     }
 
     public static void removeEntity() {
@@ -305,85 +304,82 @@ public class Map {
     }
 
     public static void addEntity(char c, int x, int y) {
-        switch(c) {
+        switch (c) {
             //maze
-            case '#':
-                boardLayer.add(new Wall(x, y));
-                break;
-            case '*':
+            case '#' -> boardLayer.add(new Wall(x, y));
+            case '*' -> {
                 boardLayer.add(new Grass(x, y));
                 topLayer.add(new Brick(x, y));
-                break;
-            case 'x':
+            }
+            case 'x' -> {
                 boardLayer.add(new Grass(x, y));
                 midLayer.add(new Portal(x, y));
                 topLayer.add(new Brick(x, y));
-                break;
-            case ' ':
-                boardLayer.add(new Grass(x, y));
-                break;
+            }
+            case ' ' -> boardLayer.add(new Grass(x, y));
+
             //powerups
-            case 'b':
+            case 'b' -> {
                 boardLayer.add(new Grass(x, y));
                 midLayer.add(new BombsItem(x, y));
                 topLayer.add(new Brick(x, y));
-                break;
-            case 's':
+            }
+            case 's' -> {
                 boardLayer.add(new Grass(x, y));
                 midLayer.add(new SpeedItem(x, y));
                 topLayer.add(new Brick(x, y));
-                break;
-            case 'f':
+            }
+            case 'f' -> {
                 boardLayer.add(new Grass(x, y));
                 midLayer.add(new FlamesItem(x, y));
                 topLayer.add(new Brick(x, y));
-                break;
-            case 'd':
+            }
+            case 'd' -> {
                 boardLayer.add(new Grass(x, y));
                 midLayer.add(new DetonatorItem(x, y));
                 topLayer.add(new Brick(x, y));
-                break;
-            case 'w':
+            }
+            case 'w' -> {
                 boardLayer.add(new Grass(x, y));
                 midLayer.add(new WallPassItem(x, y));
                 topLayer.add(new Brick(x, y));
-                break;
-            case 'm':
+            }
+            case 'm' -> {
                 boardLayer.add(new Grass(x, y));
                 midLayer.add(new FlamePassItem(x, y));
                 topLayer.add(new Brick(x, y));
-                break;
-            case 'n':
+            }
+            case 'n' -> {
                 boardLayer.add(new Grass(x, y));
                 midLayer.add(new BombPassItem(x, y));
                 topLayer.add(new Brick(x, y));
-                break;
+            }
             //player
-            case 'p':
+            case 'p' -> {
                 boardLayer.add(new Grass(x, y));
                 player = Player.setPlayer(x, y);
-                break;
+            }
             //enemies
-            case '1':
+            case '1' -> {
                 boardLayer.add(new Grass(x, y));
                 enemyLayer.add(new Balloom(x, y));
-                break;
-            case '2':
+            }
+            case '2' -> {
                 boardLayer.add(new Grass(x, y));
                 enemyLayer.add(new Oneal(x, y));
-                break;
-            case '3':
+            }
+            case '3' -> {
                 boardLayer.add(new Grass(x, y));
                 enemyLayer.add(new Doll(x, y));
-                break;
-            case '4':
+            }
+            case '4' -> {
                 boardLayer.add(new Grass(x, y));
                 enemyLayer.add(new Minvo(x, y));
-                break;
-            case '5':
+            }
+            case '5' -> {
                 boardLayer.add(new Grass(x, y));
                 enemyLayer.add(new Kondoria(x, y));
-                break;
+            }
         }
     }
 
